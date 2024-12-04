@@ -9,8 +9,46 @@ const AnamnesisScreen = ({ navigation }: any) => {
                 title="Registrar Anamnese"
                 onPress={() => navigation.navigate("RegisterAnamnesis")}
             />
-            {/* Lista de anamneses seria carregada aqui */}
+
+            <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar pelo nome do paciente"
+                value={searchQuery}
+                onChangeText={handleSearch}
+            />
+
+            {/* Lista de anamneses */}
+            <FlatList
+                data={filteredAnamneses}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                    <View style={styles.itemContainer}>
+                        {/* Cabeçalho do item */}
+                        <TouchableOpacity onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>
+                            <Text style={styles.itemTitle}>{item.patient.name}</Text>
+                            <Text>{expandedId === item.id ? "-" : "+"}</Text>
+                        </TouchableOpacity>
+
+                        {/* Conteúdo expandido */}
+                        <Collapsible collapsed={expandedId !== item.id}>
+                            <View style={styles.itemContent}>
+                                <Text>
+                                    <Text style={styles.bold}>Descrição:</Text> {item.description}
+                                </Text>
+                                <Text>
+                                    <Text style={styles.bold}>Data:</Text>{" "}
+                                    {new Date(item.date).toLocaleDateString()}
+                                </Text>
+                                <Text>
+                                    <Text style={styles.bold}>Psicólogo:</Text> {item.psychologist.name}
+                                </Text>
+                            </View>
+                        </Collapsible>
+                    </View>
+                )}
+            />
         </View>
+        </View >
     );
 };
 

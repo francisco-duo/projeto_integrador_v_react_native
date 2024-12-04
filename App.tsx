@@ -7,9 +7,11 @@ import HomeScreen from "./screens/HomeScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import DashboardScreen from "./screens/DashboardScreen";
-// import PatientScreen from "./screens/PatientScreen";
-// import PsychologistScreen from "./screens/PsychologistScreen";
-// import AdminScreen from "./screens/AdminScreen";
+import PatientScreen from "./screens/PatientScreen";
+import PsychologistScreen from "./screens/PsychologistScreen";
+import AdminScreen from "./screens/AdminScreen";
+import RegisterAnamnesis from "./screens/RegisterAnamnesis";
+import AnamnesisListScreen from "./screens/ListAnamnesisScreen";
 
 const Stack = createStackNavigator();
 
@@ -21,9 +23,11 @@ const App = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
-        {/* <Stack.Screen name="Patient" component={PatientScreen} />
+        <Stack.Screen name="Patient" component={PatientScreen} />
         <Stack.Screen name="Psychologist" component={PsychologistScreen} />
-        <Stack.Screen name="Admin" component={AdminScreen} /> */}
+        <Stack.Screen name="Admin" component={AdminScreen} />
+        <Stack.Screen name="RegisterAnamnesis" component={RegisterAnamnesis} />
+        <Stack.Screen name="ListAnamnesis" component={AnamnesisListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
