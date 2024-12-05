@@ -15,10 +15,15 @@ const LoginScreen = ({ navigation }: any) => {
     const handleLogin = async () => {
         try {
             const response = api.post("/login", { email, password });
-            const { token, role } = (await response).data;
+            const { token, role, userId } = (await response).data;
+
+            // console.log(response);
 
             await AsyncStorage.setItem("token", token);
             await AsyncStorage.setItem("role", role);
+            await AsyncStorage.setItem("userId", String(userId));
+
+            // console.log(userId)
 
             navigation.navigate("Dashboard");
         } catch (error: any) {

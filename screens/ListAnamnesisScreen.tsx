@@ -1,23 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+
+import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import api from "../services/api";
-import Collapsible from "react-native-collapsible";
+
+
+interface Anamnesis {
+    id: number;
+    description: string;
+    date: string;
+    patient: {
+        name: string;
+    };
+    psychologist: {
+        name: string;
+    };
+}
 
 const AnamnesisListScreen = () => {
-    const [anamneses, setAnamneses] = useState([]);
-    const [filteredAnamneses, setFilteredAnamneses] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
-    const [expandedId, setExpandedId] = useState<number | null>(null);
+    const [anamneses, setAnamneses] = useState<Anamnesis[]>([]);
 
-    // Carregar anamneses ao montar o componente
     useEffect(() => {
         const fetchAnamneses = async () => {
             try {
-                const response = await api.get("/anamneses");
+                const userId = await AsyncStorage.getItem("userId");
+                const response = await api.get(`/anamneses/psycho/${userId}`);
                 setAnamneses(response.data);
-                setFilteredAnamneses(response.data);
             } catch (error) {
-                console.error("Erro ao buscar anamneses:", error);
+                console.error("Erro ao carregar anamneses:", error);
                 Alert.alert("Erro", "Não foi possível carregar as anamneses.");
             }
         };
@@ -25,55 +37,26 @@ const AnamnesisListScreen = () => {
         fetchAnamneses();
     }, []);
 
-    // Filtrar anamneses pelo nome do paciente
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        const filtered = anamneses.filter((anamnesis: any) =>
-            anamnesis.patient.name.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilteredAnamneses(filtered);
-    };
-
-    // Alternar expansão/recolhimento
-    const toggleExpand = (id: number) => {
-        setExpandedId(expandedId === id ? null : id);
-    };
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Lista de Anamneses</Text>
+            <Text style={styles.title}>Minhas Anamneses</Text>
 
-            {/* Campo de pesquisa */}
-            <TextInput
-                style={styles.searchInput}
-                placeholder="Buscar pelo nome do paciente"
-                value={searchQuery}
-                onChangeText={handleSearch}
-            />
-
-            {/* Lista de anamneses */}
-            <FlatList
-                data={filteredAnamneses}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View style={styles.itemContainer}>
-                        {/* Título do item */}
-                        <TouchableOpacity onPress={() => toggleExpand(item.id)} style={styles.itemHeader}>
-                            <Text style={styles.itemTitle}>{item.patient.name}</Text>
-                            <Text>{expandedId === item.id ? "-" : "+"}</Text>
-                        </TouchableOpacity>
-
-                        {/* Conteúdo expandido */}
-                        <Collapsible collapsed={expandedId !== item.id}>
-                            <View style={styles.itemContent}>
-                                <Text><Text style={styles.bold}>Descrição:</Text> {item.description}</Text>
-                                <Text><Text style={styles.bold}>Data:</Text> {new Date(item.date).toLocaleDateString()}</Text>
-                                <Text><Text style={styles.bold}>Psicólogo:</Text> {item.psychologist.name}</Text>
-                            </View>
-                        </Collapsible>
-                    </View>
-                )}
-            />
+            {anamneses.length > 0 ? (
+                <FlatList
+                    data={anamneses}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <View style={styles.item}>
+                            {/* <Text style={styles.itemText}>Paciente: {item.patient.name}</Text> */}
+                            <Text style={styles.itemText}>Descrição: {item.description}</Text>
+                            <Text style={styles.itemText}>Data: {new Date(item.date).toLocaleDateString()}</Text>
+                            <Text style={styles.itemText}>Psicólogo: {item.psychologist.name}</Text>
+                        </View>
+                    )}
+                />
+            ) : (
+                <Text style={styles.noData}>Nenhuma anamnese encontrada</Text>
+            )}
         </View>
     );
 };
@@ -88,36 +71,20 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 20,
     },
-    searchInput: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 20,
+    item: {
+        padding: 15,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+        backgroundColor: "#fff",
     },
-    itemContainer: {
-        marginBottom: 15,
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: "#ccc",
-    },
-    itemHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        padding: 10,
-        backgroundColor: "#f7f7f7",
-        borderTopLeftRadius: 5,
-        borderTopRightRadius: 5,
-    },
-    itemTitle: {
+    itemText: {
         fontSize: 16,
-        fontWeight: "bold",
     },
-    itemContent: {
-        padding: 10,
-    },
-    bold: {
-        fontWeight: "bold",
+    noData: {
+        textAlign: "center",
+        marginTop: 20,
+        fontSize: 18,
+        color: "#999",
     },
 });
 

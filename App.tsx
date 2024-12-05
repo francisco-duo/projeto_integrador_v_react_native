@@ -27,7 +27,7 @@ const App = () => {
         <Stack.Screen name="Psychologist" component={PsychologistScreen} />
         <Stack.Screen name="Admin" component={AdminScreen} />
         <Stack.Screen name="RegisterAnamnesis" component={RegisterAnamnesis} />
-        <Stack.Screen name="ListAnamnesis" component={AnamnesisListScreen} />
+        <Stack.Screen name="AnamnesisList" component={AnamnesisListScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
